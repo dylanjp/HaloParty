@@ -1,6 +1,7 @@
-# Operation: Family Reunion — Halo LAN Party Site
+# Operation: Spartans Never Die — Halo LAN Party Site
 
 A single-file static site for a Halo MCC LAN party. No build step, no dependencies.
+Mobile-first, Halo × Tron themed. Current party: **Friday, June 26, 2026 · 6:30 PM MT**.
 
 ## Deploy to GitHub Pages
 
@@ -25,13 +26,24 @@ Common tweaks:
 
 | What | Where |
 |---|---|
-| Date / time | `target` variable in the `<script>` block, plus the `hero-data` div in the HERO section |
+| Date / time | `target` variable in the `<script>` block, plus the `.hero__chips` and `.card-title`/`.sched-time` text in the HERO + BRIEFING sections |
+| Countdown | Segmented cells (`#cd-days`/`#cd-hours`/`#cd-mins`/`#cd-secs`); the JS auto-fills them from `target` |
 | Discord invite URL | `href` on the `.discord-cta` link (search for `discord.gg/`) |
 | Gamertags | `.roster-tag` divs in the ROSTER section |
-| Schedule items | `.schedule-item` blocks in the BRIEFING section |
-| Mission code stamp | `.mission-stamp` div in the HERO section |
-| Hero image | Replace `assets/spartan.jpg` with any same-ish-aspect-ratio JPG/PNG |
+| Schedule items | `.sched-item` blocks in the BRIEFING section |
+| Mission code stamp | `.stamp` span in the HERO section |
+| Hero image | Replace `assets/spartan.jpg` with a wide (~2:1) landscape JPG/PNG; it's used full-bleed via `object-fit: cover`. Tune framing with `object-position` on `.hero__img` |
+
+## Layout notes
+
+- **Mobile-first CSS.** Base styles target phones; `min-width` media queries (560 / 760 / 1000px) scale up. Test narrow first.
+- Full-bleed hero uses `svh` units (not `vh`) so mobile browser chrome doesn't hide content. Keep it that way.
+- `body` has `overflow-x: hidden` as a guard; avoid `100vw` widths (they cause sideways scroll). Decorative motion is disabled under `prefers-reduced-motion`.
+
+## Local preview
+
+It's a static file — open `index.html` directly, or serve the folder: `python -m http.server 5599` then visit `http://localhost:5599`. (`.claude/launch.json` defines this for the Claude Code preview panel.)
 
 ## Fonts
 
-Google Fonts: Saira Stencil One (display), Rajdhani (body), Share Tech Mono (HUD readouts). Loaded via CDN — no install needed.
+Google Fonts: Saira Stencil One (display), Orbitron (countdown / tech numerals), Rajdhani (body), Share Tech Mono (HUD readouts). Loaded via CDN — no install needed.

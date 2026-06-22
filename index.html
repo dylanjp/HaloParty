@@ -2,832 +2,968 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>OPERATION: SPARTANS NEVER DIE // Halo LAN Party</title>
-  <meta name="description" content="Halo MCC LAN party — June 13, 2026, 6:30 PM MT. Crossplay across Xbox and PC.">
+  <meta name="description" content="Halo MCC LAN party — Friday, June 26, 2026, 6:30 PM MT. Xbox + PC crossplay. Finish the fight.">
+  <meta name="theme-color" content="#02050c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2302050c'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2300E5FF' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23FF7A1A'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
   <style>
+    /* =====================================================================
+       OPERATION: SPARTANS NEVER DIE — Halo × Tron LAN party site
+       Single file. Mobile-first. Base styles target phones; min-width
+       media queries scale up to tablet/desktop.
+       ===================================================================== */
+
     :root {
-      --bg-void: #050810;
-      --bg-deep: #0a1020;
-      --bg-card: #0e1726;
-      --bg-elevated: #142133;
-      --hud-blue: #4FC3F7;
-      --hud-cyan: #00E5FF;
-      --hud-amber: #FFAB00;
-      --hud-gold: #FFD600;
-      --hud-red: #FF5252;
-      --text-primary: #E8EEF5;
-      --text-secondary: #94A3B8;
-      --text-dim: #4A5A6E;
-      --border-hud: rgba(79, 195, 247, 0.25);
-      --border-hud-strong: rgba(79, 195, 247, 0.6);
-      --glow-cyan: 0 0 24px rgba(0, 229, 255, 0.4);
-      --glow-amber: 0 0 24px rgba(255, 171, 0, 0.4);
+      /* --- surfaces --- */
+      --void: #02050c;
+      --bg-deep: #060c18;
+      --bg-card: #0a1322;
+      --bg-elevated: #0f1d30;
+
+      /* --- tron / halo light --- */
+      --cyan: #00E5FF;
+      --cyan-bright: #6FF4FF;
+      --blue: #2E7BFF;
+      --ice: #CFF7FF;
+      --orange: #FF7A1A;   /* tron "clu" / halo 3 sunset */
+      --amber: #FFB020;
+      --gold: #FFD34E;
+      --red: #FF4D5E;
+
+      /* --- text --- */
+      --text: #E6F3FB;
+      --text-dim: #8DA6BC;
+      --text-faint: #495d72;
+
+      /* --- lines + glow --- */
+      --line: rgba(0, 229, 255, 0.22);
+      --line-strong: rgba(0, 229, 255, 0.55);
+      --line-amber: rgba(255, 176, 32, 0.45);
+      --glow-cyan: 0 0 22px rgba(0, 229, 255, 0.45);
+      --glow-cyan-soft: 0 0 30px rgba(0, 229, 255, 0.22);
+      --glow-amber: 0 0 22px rgba(255, 176, 32, 0.45);
+      --glow-orange: 0 0 26px rgba(255, 122, 26, 0.5);
+
+      /* --- type --- */
+      --f-display: 'Saira Stencil One', sans-serif;
+      --f-body: 'Rajdhani', sans-serif;
+      --f-mono: 'Share Tech Mono', monospace;
+      --f-tech: 'Orbitron', sans-serif;
+
+      --maxw: 1120px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
 
-    body {
-      font-family: 'Rajdhani', sans-serif;
-      background: var(--bg-void);
-      color: var(--text-primary);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-      line-height: 1.5;
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
     }
 
-    /* Starfield + space gradient */
+    body {
+      font-family: var(--f-body);
+      background: var(--void);
+      color: var(--text);
+      min-height: 100svh;
+      line-height: 1.55;
+      overflow-x: hidden;            /* hard guard against sideways scroll */
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Deep-space gradient + starfield (fixed, behind everything) */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse at top, rgba(15, 35, 70, 0.6) 0%, transparent 60%),
-        radial-gradient(ellipse at bottom, rgba(20, 10, 40, 0.4) 0%, transparent 60%),
-        radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1px 1px at 28% 65%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1.5px 1.5px at 78% 12%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1px 1px at 88% 78%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1px 1px at 45% 38%, rgba(255,255,255,0.4), transparent),
-        radial-gradient(1.5px 1.5px at 58% 90%, rgba(255,255,255,0.4), transparent),
-        radial-gradient(1px 1px at 8% 88%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1px 1px at 92% 45%, rgba(255,255,255,0.4), transparent),
-        var(--bg-void);
+        radial-gradient(ellipse at 50% -10%, rgba(16, 46, 92, 0.55) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 110%, rgba(70, 30, 8, 0.4) 0%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,0.55), transparent),
+        radial-gradient(1px 1px at 28% 65%, rgba(255,255,255,0.45), transparent),
+        radial-gradient(1.5px 1.5px at 78% 14%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 88% 78%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 45% 40%, rgba(255,255,255,0.35), transparent),
+        radial-gradient(1.5px 1.5px at 62% 88%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 7% 86%, rgba(255,255,255,0.45), transparent),
+        radial-gradient(1px 1px at 94% 46%, rgba(255,255,255,0.4), transparent),
+        var(--void);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* CRT scanline overlay */
+    /* Faint CRT scanline veil over the whole page */
     body::after {
       content: '';
       position: fixed;
       inset: 0;
       background: repeating-linear-gradient(
         to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(79, 195, 247, 0.025) 3px,
-        rgba(79, 195, 247, 0.025) 4px
+        transparent 0, transparent 3px,
+        rgba(0, 229, 255, 0.022) 3px, rgba(0, 229, 255, 0.022) 4px
       );
       pointer-events: none;
       z-index: 1;
+      mix-blend-mode: screen;
     }
 
     .container {
-      max-width: 1100px;
+      width: 100%;
+      max-width: var(--maxw);
       margin: 0 auto;
-      padding: 0 1.5rem;
+      padding: 0 1.1rem;
       position: relative;
       z-index: 2;
     }
 
-    /* ============ HERO ============ */
+    a { color: var(--cyan); }
+
+    /* ====================================================================
+       HERO
+       ==================================================================== */
     .hero {
-      min-height: 100vh;
+      position: relative;
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 3rem 1.5rem;
-      position: relative;
+      overflow: hidden;
+      isolation: isolate;
     }
 
-    .hero > .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    /* Cinematic background image — kept legible by gradients in .hero__veil */
+    .hero__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 58% 26%;   /* keep the Chief framed on tall screens */
+      z-index: -2;
+      animation: heroDrift 24s ease-in-out infinite alternate;
     }
 
-    .mission-stamp {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--hud-amber);
-      letter-spacing: 0.35em;
-      margin-bottom: 1.75rem;
-      padding: 0.5rem 1.2rem;
-      border: 1px solid var(--hud-amber);
-      box-shadow: var(--glow-amber);
-      animation: stampAppear 0.6s ease forwards;
-      opacity: 0;
+    .hero__veil {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        /* top: darken for the HUD strip */
+        linear-gradient(180deg, rgba(2,5,12,0.82) 0%, rgba(2,5,12,0.18) 20%, transparent 38%),
+        /* bottom: heavy fade into page so title reads + hero blends out */
+        linear-gradient(0deg, var(--void) 1%, rgba(2,5,12,0.94) 12%, rgba(2,5,12,0.45) 34%, transparent 58%),
+        /* tron color split: cool blue left, ember orange right (matches the art) */
+        linear-gradient(105deg, rgba(8,38,86,0.5) 0%, transparent 42%, transparent 58%, rgba(120,52,8,0.42) 100%);
     }
 
-    .portrait {
-      position: relative;
-      width: clamp(240px, 42vw, 400px);
-      margin-bottom: 2.5rem;
-      animation: fadeUp 1s ease 0.3s forwards;
-      opacity: 0;
+    /* Tron grid rising out of the hero's dark base into the page */
+    .hero__grid {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 38svh;
+      z-index: -1;
+      pointer-events: none;
+      perspective: 320px;
+      perspective-origin: 50% 0%;
+      -webkit-mask-image: linear-gradient(to top, #000 8%, transparent 92%);
+              mask-image: linear-gradient(to top, #000 8%, transparent 92%);
     }
-
-    .portrait-frame {
-      position: relative;
-      padding: 6px;
-      background: var(--bg-deep);
-      border: 1px solid var(--border-hud-strong);
-      box-shadow:
-        0 0 40px rgba(79, 195, 247, 0.3),
-        0 0 80px rgba(0, 229, 255, 0.12);
-      animation: helmetFloat 6s ease-in-out infinite;
-    }
-
-    .portrait-frame::before,
-    .portrait-frame::after {
+    .hero__grid::before {
       content: '';
       position: absolute;
-      width: 22px;
-      height: 22px;
-      border: 2px solid var(--hud-cyan);
-      z-index: 2;
+      left: -75%; right: -75%; bottom: -2px;
+      height: 200%;
+      background-image:
+        linear-gradient(to right, var(--line-strong) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--line-strong) 1px, transparent 1px);
+      background-size: 46px 46px;
+      transform: rotateX(73deg);
+      transform-origin: 50% 100%;
+      animation: gridRun 3.2s linear infinite;
     }
-    .portrait-frame::before {
-      top: -4px; left: -4px;
-      border-right: none; border-bottom: none;
-    }
-    .portrait-frame::after {
-      bottom: -4px; right: -4px;
-      border-left: none; border-top: none;
-    }
-
-    .portrait-img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    /* Scanline overlay on portrait */
-    .portrait-frame > .scan {
+    /* Glowing horizon line where grid meets the Chief */
+    .hero__grid::after {
+      content: '';
       position: absolute;
-      inset: 6px;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 2px,
-        rgba(0, 229, 255, 0.06) 2px,
-        rgba(0, 229, 255, 0.06) 3px
-      );
-      pointer-events: none;
-      mix-blend-mode: overlay;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 18px 3px rgba(0, 229, 255, 0.7), 0 0 60px 8px rgba(0, 229, 255, 0.35);
     }
 
-    .portrait-meta {
+    /* --- top HUD strip --- */
+    .hero__hud {
+      position: relative;
+      z-index: 3;
       display: flex;
       justify-content: space-between;
-      margin-top: 0.85rem;
-      padding: 0 0.25rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--hud-amber);
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.1rem 0;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      font-family: var(--f-mono);
+      font-size: 0.68rem;
       letter-spacing: 0.22em;
+      color: var(--amber);
     }
-
-    .status-dot {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      background: var(--hud-amber);
+    .hero__hud .sig {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--cyan);
+    }
+    .dot {
+      width: 7px; height: 7px;
       border-radius: 50%;
-      margin-right: 0.5rem;
-      vertical-align: middle;
-      animation: statusPulse 2s ease-in-out infinite;
+      background: var(--cyan);
+      box-shadow: 0 0 8px 1px var(--cyan);
+      animation: pulse 2s ease-in-out infinite;
     }
+    .dot.amber { background: var(--amber); box-shadow: 0 0 8px 1px var(--amber); }
 
-    @keyframes statusPulse {
-      0%, 100% { opacity: 0.5; box-shadow: 0 0 0 0 rgba(255, 171, 0, 0.7); }
-      50% { opacity: 1; box-shadow: 0 0 10px 2px rgba(255, 171, 0, 0.7); }
-    }
-
-    .hero-title {
-      font-family: 'Saira Stencil One', sans-serif;
-      font-size: clamp(2.4rem, 7vw, 5rem);
-      letter-spacing: 0.04em;
-      line-height: 0.95;
-      margin-bottom: 1.25rem;
-      background: linear-gradient(180deg, var(--hud-blue) 0%, var(--hud-cyan) 60%, #C7E9FA 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: fadeUp 1s ease 0.5s forwards;
-      opacity: 0;
-    }
-
-    .hero-subtitle {
-      font-weight: 300;
-      font-size: clamp(0.95rem, 1.8vw, 1.3rem);
-      letter-spacing: 0.45em;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      margin-bottom: 2.5rem;
-      animation: fadeUp 1s ease 0.7s forwards;
-      opacity: 0;
-    }
-
-    .hero-data {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-      color: var(--hud-cyan);
-      letter-spacing: 0.22em;
-      padding: 0.9rem 2rem;
-      border-top: 1px solid var(--border-hud-strong);
-      border-bottom: 1px solid var(--border-hud-strong);
+    /* --- hero content, anchored low --- */
+    .hero__body {
       position: relative;
-      animation: fadeUp 1s ease 0.9s forwards;
-      opacity: 0;
+      z-index: 3;
+      margin-top: auto;
+      width: 100%;
+      max-width: var(--maxw);
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 1.1rem 2.2rem;
+      padding-bottom: max(2.2rem, env(safe-area-inset-bottom));
     }
 
-    .hero-data::before, .hero-data::after {
+    .stamp {
+      display: inline-block;
+      font-family: var(--f-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.28em;
+      color: var(--amber);
+      padding: 0.4rem 0.85rem;
+      border: 1px solid var(--line-amber);
+      box-shadow: var(--glow-amber);
+      background: rgba(2, 5, 12, 0.55);
+      margin-bottom: 1.1rem;
+      animation: fadeUp 0.7s ease 0.1s both;
+    }
+
+    .hero__title {
+      font-family: var(--f-display);
+      font-size: clamp(2.5rem, 13vw, 6.5rem);
+      line-height: 0.92;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(175deg, #EAFBFF 4%, var(--cyan) 48%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: var(--cyan);
+      filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.35));
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+    .hero__title .tail {
+      display: block;
+      background: linear-gradient(175deg, #FFE6B8 0%, var(--amber) 45%, var(--orange) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 18px rgba(255, 122, 26, 0.35));
+    }
+
+    .hero__tagline {
+      font-family: var(--f-mono);
+      font-size: clamp(0.8rem, 3.4vw, 1.05rem);
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--ice);
+      margin-bottom: 1.4rem;
+      animation: fadeUp 0.8s ease 0.32s both;
+    }
+    .hero__tagline b { color: var(--amber); font-weight: 400; }
+
+    /* date / time / loc as wrapping chips — never a single overflowing line */
+    .hero__chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-bottom: 1.7rem;
+      animation: fadeUp 0.8s ease 0.42s both;
+    }
+    .chip {
+      font-family: var(--f-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: var(--cyan);
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--line);
+      background: rgba(6, 12, 24, 0.66);
+      backdrop-filter: blur(3px);
+      white-space: nowrap;
+    }
+    .chip b { color: var(--text-dim); font-weight: 400; }
+
+    /* --- segmented countdown --- */
+    .countdown {
+      display: flex;
+      align-items: stretch;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.52s both;
+    }
+    .cd-cell {
+      flex: 1 1 0;
+      min-width: 60px;
+      text-align: center;
+      padding: 0.7rem 0.3rem 0.55rem;
+      background: linear-gradient(180deg, rgba(10, 24, 44, 0.85), rgba(6, 12, 24, 0.85));
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+    .cd-cell::before {
       content: '';
       position: absolute;
-      width: 8px;
-      height: 8px;
-      background: var(--hud-cyan);
-      transform: rotate(45deg);
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0.8;
     }
-    .hero-data::before { top: -4px; left: -4px; }
-    .hero-data::after { bottom: -4px; right: -4px; }
-
-    .countdown {
-      margin-top: 1.5rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: clamp(1.1rem, 2.4vw, 1.6rem);
-      color: var(--hud-amber);
+    .cd-num {
+      display: block;
+      font-family: var(--f-tech);
+      font-weight: 800;
+      font-size: clamp(1.5rem, 7vw, 2.6rem);
+      line-height: 1;
+      color: var(--cyan-bright);
+      text-shadow: var(--glow-cyan);
+      font-variant-numeric: tabular-nums;
+    }
+    .cd-lbl {
+      display: block;
+      font-family: var(--f-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--text-dim);
+      margin-top: 0.4rem;
+      text-transform: uppercase;
+    }
+    .cd-note {
+      width: 100%;
+      font-family: var(--f-mono);
+      font-size: 0.68rem;
       letter-spacing: 0.2em;
-      text-shadow: var(--glow-amber);
-      animation: fadeUp 1s ease 1.1s forwards;
-      opacity: 0;
+      color: var(--amber);
+      margin-top: 0.7rem;
     }
 
     .scroll-hint {
-      position: absolute;
-      bottom: 1.75rem;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
+      align-self: center;
+      margin-top: 1.8rem;
+      display: inline-flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.5rem;
       text-decoration: none;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.32em;
-      color: var(--text-secondary);
-      opacity: 0;
-      animation: fadeHint 1s ease 1.5s forwards;
-      transition: color 0.3s ease;
-      padding: 0.5rem 0.75rem;
+      font-family: var(--f-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.3em;
+      color: var(--text-dim);
+      padding: 0.4rem 0.75rem;
+      animation: fadeUp 0.8s ease 0.7s both;
+      transition: color 0.25s ease;
     }
-
-    .scroll-hint:hover { color: var(--hud-cyan); }
-
-    .scroll-chevron {
-      width: 14px;
-      height: 14px;
-      border-right: 2px solid var(--hud-cyan);
-      border-bottom: 2px solid var(--hud-cyan);
+    .scroll-hint:hover, .scroll-hint:focus-visible { color: var(--cyan); }
+    .chevron {
+      width: 12px; height: 12px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
       transform: rotate(45deg);
-      animation: scrollBob 1.8s ease-in-out infinite;
-      animation-delay: 2.5s;
+      animation: bob 1.8s ease-in-out infinite;
     }
 
-    @keyframes fadeHint { to { opacity: 1; } }
+    /* ====================================================================
+       SECTIONS
+       ==================================================================== */
+    .section { padding: 3.4rem 0; position: relative; }
 
-    @keyframes scrollBob {
-      0%, 100% { transform: rotate(45deg) translate(0, 0); }
-      50% { transform: rotate(45deg) translate(4px, 4px); }
-    }
-
-    /* ============ SECTIONS ============ */
-    .section {
-      padding: 5rem 0;
-      position: relative;
-    }
-
-    .section-header {
+    .section-head {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      margin-bottom: 3rem;
+      gap: 0.8rem;
+      margin-bottom: 1.9rem;
     }
-
-    .section-number {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--hud-amber);
-      letter-spacing: 0.2em;
+    .section-num {
+      font-family: var(--f-tech);
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.16em;
+      color: var(--amber);
       white-space: nowrap;
     }
-
     .section-title {
-      font-family: 'Saira Stencil One', sans-serif;
-      font-size: clamp(1.8rem, 4.2vw, 3rem);
-      color: var(--text-primary);
-      letter-spacing: 0.04em;
-      line-height: 1;
+      font-family: var(--f-display);
+      font-size: clamp(1.55rem, 7.5vw, 3rem);
+      line-height: 1.02;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
-      white-space: nowrap;
+      color: var(--text);
     }
-
     .section-divider {
       flex: 1;
       height: 1px;
-      background: linear-gradient(90deg, var(--border-hud-strong), transparent);
+      min-width: 18px;
+      background: linear-gradient(90deg, var(--line-strong), transparent);
     }
 
-    /* ============ HUD CARDS ============ */
-    .hud-card {
+    /* ====================================================================
+       HUD CARDS
+       ==================================================================== */
+    .grid { display: grid; gap: 1.1rem; }
+
+    .card {
       background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-deep) 100%);
-      border: 1px solid var(--border-hud);
-      padding: 2rem;
+      border: 1px solid var(--line);
+      padding: 1.5rem 1.4rem;
       position: relative;
-      transition: all 0.3s ease;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     }
-
-    .hud-card::before, .hud-card::after {
+    /* corner brackets */
+    .card::before, .card::after {
       content: '';
       position: absolute;
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--hud-cyan);
-      transition: all 0.3s ease;
+      width: 16px; height: 16px;
+      border: 2px solid var(--cyan);
+      transition: width 0.3s ease, height 0.3s ease;
     }
-    .hud-card::before {
-      top: -1px; left: -1px;
-      border-right: none; border-bottom: none;
-    }
-    .hud-card::after {
-      bottom: -1px; right: -1px;
-      border-left: none; border-top: none;
-    }
-
-    .hud-card:hover {
-      border-color: var(--border-hud-strong);
-      box-shadow: var(--glow-cyan);
+    .card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .card::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+    .card:hover {
+      border-color: var(--line-strong);
+      box-shadow: var(--glow-cyan-soft);
       transform: translateY(-3px);
     }
-    .hud-card:hover::before, .hud-card:hover::after {
-      width: 24px;
-      height: 24px;
-    }
+    .card:hover::before, .card:hover::after { width: 22px; height: 22px; }
 
     .card-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--hud-amber);
-      letter-spacing: 0.28em;
-      margin-bottom: 0.5rem;
+      font-family: var(--f-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.24em;
+      color: var(--amber);
+      margin-bottom: 0.45rem;
     }
-
     .card-title {
-      font-family: 'Saira Stencil One', sans-serif;
-      font-size: 1.5rem;
-      color: var(--hud-cyan);
-      margin-bottom: 1rem;
-      letter-spacing: 0.04em;
-      line-height: 1.1;
+      font-family: var(--f-display);
+      font-size: 1.32rem;
+      line-height: 1.12;
+      letter-spacing: 0.02em;
+      color: var(--cyan);
+      margin-bottom: 0.85rem;
     }
-
-    .card-body {
-      font-size: 1.02rem;
-      line-height: 1.65;
-      color: var(--text-primary);
-    }
-
-    .card-body p { margin-bottom: 0.75rem; }
+    .card-body { font-size: 1rem; line-height: 1.62; color: var(--text); }
+    .card-body p { margin-bottom: 0.7rem; }
     .card-body p:last-child { margin-bottom: 0; }
-    .card-body strong { color: var(--hud-blue); font-weight: 600; }
-    .card-body em { color: var(--hud-amber); font-style: normal; }
+    .card-body strong { color: var(--cyan-bright); font-weight: 600; }
+    .card-body em { color: var(--amber); font-style: normal; font-weight: 500; }
 
-    /* ============ BRIEFING ============ */
-    .briefing-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-
-    .schedule-item {
+    /* schedule rows */
+    .sched-item {
       display: flex;
-      gap: 1.5rem;
-      padding: 0.85rem 0;
-      border-bottom: 1px dashed var(--border-hud);
+      flex-direction: column;
+      gap: 0.1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px dashed var(--line);
     }
-    .schedule-item:last-child { border-bottom: none; }
-
-    .schedule-time {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.05rem;
-      color: var(--hud-cyan);
-      min-width: 110px;
-      flex-shrink: 0;
-    }
-
-    /* ============ LOADOUT GRID ============ */
-    .loadout-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 1.5rem;
+    .sched-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .sched-time {
+      font-family: var(--f-mono);
+      font-size: 0.95rem;
+      color: var(--cyan);
+      letter-spacing: 0.04em;
     }
 
-    /* ============ COMMS CTA ============ */
-    .comms-feature {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 3rem 2rem;
-    }
+    /* ====================================================================
+       COMMS CTA
+       ==================================================================== */
+    .comms-feature { text-align: center; padding: 2.4rem 1.4rem; margin-bottom: 1.1rem; }
+    .comms-feature .card-title { font-size: 1.7rem; }
+    .comms-feature .card-body { max-width: 540px; margin: 0 auto 1.4rem; color: var(--text-dim); }
 
     .discord-cta {
       display: inline-flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 1.2rem 2.5rem;
-      background: linear-gradient(135deg, var(--hud-blue), var(--hud-cyan));
-      color: var(--bg-void);
-      font-family: 'Saira Stencil One', sans-serif;
-      font-size: 1.15rem;
-      letter-spacing: 0.08em;
-      text-decoration: none;
+      gap: 0.6rem;
+      min-height: 52px;
+      padding: 0.95rem 1.9rem;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: var(--void);
+      font-family: var(--f-display);
+      font-size: 1.05rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      text-decoration: none;
       position: relative;
       overflow: hidden;
-      margin-top: 0.5rem;
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
     }
-
     .discord-cta::before {
       content: '';
       position: absolute;
-      top: 0; left: -100%;
+      top: 0; left: -120%;
       width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
       transition: left 0.6s ease;
     }
+    .discord-cta:hover { box-shadow: 0 0 44px rgba(0, 229, 255, 0.6); transform: translateY(-2px); }
+    .discord-cta:hover::before { left: 120%; }
 
-    .discord-cta:hover {
-      box-shadow: 0 0 48px rgba(0, 229, 255, 0.6);
-      transform: translateY(-2px);
-    }
-    .discord-cta:hover::before { left: 100%; }
-
-    /* ============ ROSTER ============ */
+    /* ====================================================================
+       ROSTER
+       ==================================================================== */
     .roster-intro {
-      margin-bottom: 2rem;
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-      max-width: 700px;
+      margin-bottom: 1.5rem;
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      max-width: 720px;
     }
-    .roster-intro strong { color: var(--hud-amber); }
-
-    .roster-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-    }
+    .roster-intro strong { color: var(--amber); font-weight: 600; }
 
     .roster-item {
-      padding: 1.5rem 1.75rem;
+      padding: 1.3rem 1.4rem;
       background: var(--bg-card);
-      border-left: 3px solid var(--hud-amber);
-      transition: all 0.3s ease;
+      border-left: 3px solid var(--amber);
+      transition: border-color 0.3s ease, background 0.3s ease;
     }
-    .roster-item:hover {
-      border-left-color: var(--hud-cyan);
-      background: var(--bg-elevated);
-    }
-
+    .roster-item:hover { border-left-color: var(--cyan); background: var(--bg-elevated); }
     .roster-platform {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--hud-amber);
-      letter-spacing: 0.28em;
-      margin-bottom: 0.5rem;
+      font-family: var(--f-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.24em;
+      color: var(--amber);
+      margin-bottom: 0.45rem;
     }
-
     .roster-tag {
-      font-family: 'Saira Stencil One', sans-serif;
-      font-size: 1.6rem;
-      color: var(--hud-cyan);
-      letter-spacing: 0.04em;
-      word-break: break-all;
+      font-family: var(--f-display);
+      font-size: clamp(1.3rem, 6vw, 1.7rem);
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+      overflow-wrap: anywhere;   /* wrap long tags cleanly, never break mid-glyph spill */
     }
 
-    /* ============ FOOTER ============ */
+    /* ====================================================================
+       FOOTER
+       ==================================================================== */
     .footer {
-      padding: 3rem 0 4rem;
+      position: relative;
+      margin-top: 2rem;
+      padding: 3rem 0 3.4rem;
       text-align: center;
-      border-top: 1px solid var(--border-hud);
-      margin-top: 3rem;
+      border-top: 1px solid var(--line);
+      overflow: hidden;
     }
-
+    .footer__grid {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 130px;
+      z-index: 0;
+      pointer-events: none;
+      perspective: 260px;
+      perspective-origin: 50% 0;
+      opacity: 0.6;
+      -webkit-mask-image: linear-gradient(to top, #000, transparent);
+              mask-image: linear-gradient(to top, #000, transparent);
+    }
+    .footer__grid::before {
+      content: '';
+      position: absolute;
+      left: -75%; right: -75%; bottom: 0; height: 200%;
+      background-image:
+        linear-gradient(to right, var(--line-strong) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--line-strong) 1px, transparent 1px);
+      background-size: 44px 44px;
+      transform: rotateX(74deg);
+      transform-origin: 50% 100%;
+      animation: gridRun 3.4s linear infinite;
+    }
+    .footer__inner { position: relative; z-index: 1; }
     .footer-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      letter-spacing: 0.25em;
+      font-family: var(--f-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      color: var(--text-faint);
+      line-height: 1.7;
+    }
+    .footer-ring {
+      width: 26px; height: 26px;
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+      margin: 0 auto 1.1rem;
+      box-shadow: var(--glow-cyan), inset 0 0 10px rgba(0,229,255,0.3);
+      position: relative;
+    }
+    .footer-ring::after {
+      content: '';
+      position: absolute; inset: 35%;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: var(--glow-orange);
     }
 
-    /* ============ ANIMATIONS ============ */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn { to { opacity: 1; } }
-    @keyframes stampAppear {
-      from { opacity: 0; transform: scale(0.85); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @keyframes helmetFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    /* ====================================================================
+       SCROLL REVEAL (progressive enhancement — visible without JS)
+       ==================================================================== */
+    .js .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .js .reveal.in { opacity: 1; transform: none; }
+
+    /* ====================================================================
+       KEYFRAMES
+       ==================================================================== */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+    @keyframes pulse { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }
+    @keyframes bob { 0%,100% { transform: rotate(45deg) translate(0,0); } 50% { transform: rotate(45deg) translate(3px,3px); } }
+    @keyframes gridRun { from { background-position: 0 0; } to { background-position: 0 46px; } }
+    @keyframes heroDrift { from { transform: scale(1.06) translate(0,0); } to { transform: scale(1.12) translate(-1.5%, -1%); } }
+
+    /* ====================================================================
+       RESPONSIVE — scale UP from the mobile base
+       ==================================================================== */
+    @media (min-width: 560px) {
+      .container { padding: 0 1.6rem; }
+      .hero__body { padding-left: 1.6rem; padding-right: 1.6rem; }
+      .hero__hud { padding-left: 1.6rem; padding-right: 1.6rem; }
+      .grid.roster-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    /* ============ MOBILE ============ */
-    @media (max-width: 768px) {
-      .container { padding: 0 1rem; }
-      .section { padding: 3.5rem 0; }
-      .section-header { gap: 0.75rem; margin-bottom: 2rem; }
-      .section-title { font-size: clamp(1.6rem, 7vw, 2.2rem); white-space: normal; }
-      .briefing-grid { grid-template-columns: 1fr; gap: 1.25rem; }
-      .roster-grid { grid-template-columns: 1fr; }
-      .schedule-item { flex-direction: column; gap: 0.2rem; padding: 0.7rem 0; }
-      .schedule-time { min-width: 0; font-size: 0.95rem; }
-      .hud-card { padding: 1.5rem; }
-      .comms-feature { padding: 2rem 1rem; }
-      .discord-cta { padding: 1rem 1.75rem; font-size: 1rem; }
-      .hero { padding: 2rem 1rem; }
-      .hero-data { padding: 0.8rem 1.25rem; }
-      .mission-stamp { font-size: 0.7rem; letter-spacing: 0.25em; }
+    @media (min-width: 760px) {
+      .section { padding: 4.6rem 0; }
+      .section-head { gap: 1.2rem; margin-bottom: 2.6rem; }
+      .card { padding: 2rem 1.9rem; }
+      .card-title { font-size: 1.5rem; }
+      .grid.loadout-grid { grid-template-columns: 1fr 1fr; }
+      .sched-item { flex-direction: row; gap: 1.4rem; }
+      .sched-time { min-width: 108px; flex-shrink: 0; font-size: 1.02rem; }
+      .cd-cell { padding: 0.9rem 0.5rem 0.7rem; }
     }
 
-    @media (max-width: 420px) {
-      .roster-tag { font-size: 1.25rem; }
-      .card-title { font-size: 1.3rem; }
+    @media (min-width: 1000px) {
+      .container { padding: 0 2rem; }
+      .hero__body { padding: 0 2rem 3rem; }
+      .hero__hud { padding: 1.3rem 2rem 0; font-size: 0.72rem; }
+      .hero__img { object-position: center 30%; }
+      .grid.briefing-grid { grid-template-columns: 1fr 1fr; }
+      .grid.loadout-grid { grid-template-columns: repeat(3, 1fr); }
+      .countdown { max-width: 560px; }
+    }
+
+    /* ====================================================================
+       REDUCED MOTION — kill decorative animation
+       ==================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+      .hero__img { transform: none; }
+      .js .reveal { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body>
+  <script>document.documentElement.classList.add('js');</script>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="container">
-      <div class="mission-stamp">MISSION CODE // OP-RECON-0613</div>
+  <!-- ============================ HERO ============================ -->
+  <header class="hero">
+    <img class="hero__img" src="assets/spartan.jpg" alt="Master Chief on the field at sunset, battle rifle in hand" fetchpriority="high">
+    <div class="hero__veil"></div>
+    <div class="hero__grid" aria-hidden="true"></div>
 
-      <div class="portrait">
-        <div class="portrait-frame">
-          <img src="assets/spartan.jpg" alt="Spartan-117" class="portrait-img"/>
-          <div class="scan"></div>
-        </div>
-        <div class="portrait-meta">
-          <span>// SPARTAN-117</span>
-          <span><span class="status-dot"></span>STATUS: STANDBY</span>
-        </div>
-      </div>
-
-      <h1 class="hero-title">Operation:<br>Spartans Never Die</h1>
-      <div class="hero-subtitle">Halo LAN Party — Cousins Edition</div>
-      <div class="hero-data">13.JUN.2026 // 6:30 PM MT // LEHI, UT</div>
-      <div class="countdown" id="countdown">T-MINUS --D --:--:--</div>
+    <div class="hero__hud">
+      <span>// HALO LAN OPS</span>
+      <span class="sig"><span class="dot"></span>SIGNAL: LIVE</span>
     </div>
-    <a href="#briefing" class="scroll-hint" aria-label="Scroll to mission briefing">
-      <span>SCROLL FOR INTEL</span>
-      <span class="scroll-chevron"></span>
-    </a>
-  </section>
 
-  <!-- ============ MISSION BRIEFING ============ -->
-  <section class="section" id="briefing">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-number">// 01</span>
-        <h2 class="section-title">Mission Briefing</h2>
-        <div class="section-divider"></div>
+    <div class="hero__body">
+      <span class="stamp">MISSION CODE // OP-RECLAIMER-0626</span>
+
+      <h1 class="hero__title">Spartans<span class="tail">Never Die</span></h1>
+      <p class="hero__tagline">Halo LAN Party — Cousins Edition · <b>Finish the Fight</b></p>
+
+      <div class="hero__chips">
+        <span class="chip"><b>DATE</b> &nbsp;FRI 26.JUN.2026</span>
+        <span class="chip"><b>DROP</b> &nbsp;6:30 PM MT</span>
+        <span class="chip"><b>NET</b> &nbsp;XBOX + PC CROSSPLAY</span>
+        <span class="chip"><b>NODE</b> &nbsp;LEHI, UT</span>
       </div>
 
-      <div class="briefing-grid">
-        <div class="hud-card">
-          <div class="card-label">// DATE-TIME-LOC</div>
-          <h3 class="card-title">When &amp; Where</h3>
-          <div class="card-body">
-            <p><strong>Date:</strong> Saturday, June 13, 2026</p>
-            <p><strong>Start:</strong> 6:30 PM Mountain Time</p>
-            <p><strong>Location:</strong> Virtual — your couch, your gear</p>
-            <p><strong>Mission:</strong> Halo 1 &amp; Halo 2 multiplayer customs. Mixed Xbox + PC lobby. Crossplay engaged. Discord for voice.</p>
-          </div>
+      <div class="countdown" id="countdown" role="timer" aria-label="Countdown to drop">
+        <div class="cd-cell"><span class="cd-num" id="cd-days">--</span><span class="cd-lbl">Days</span></div>
+        <div class="cd-cell"><span class="cd-num" id="cd-hours">--</span><span class="cd-lbl">Hrs</span></div>
+        <div class="cd-cell"><span class="cd-num" id="cd-mins">--</span><span class="cd-lbl">Min</span></div>
+        <div class="cd-cell"><span class="cd-num" id="cd-secs">--</span><span class="cd-lbl">Sec</span></div>
+        <div class="cd-note" id="cd-note">// T-MINUS TO DROP</div>
+      </div>
+
+      <a href="#briefing" class="scroll-hint" aria-label="Scroll to mission briefing">
+        <span>SCROLL FOR INTEL</span>
+        <span class="chevron" aria-hidden="true"></span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====================== 01 · BRIEFING ====================== -->
+    <section class="section" id="briefing">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-num">// 01</span>
+          <h2 class="section-title">Mission Briefing</h2>
+          <span class="section-divider"></span>
         </div>
 
-        <div class="hud-card">
-          <div class="card-label">// OPS TIMELINE</div>
-          <h3 class="card-title">Schedule</h3>
-          <div class="card-body">
-            <div class="schedule-item">
-              <div class="schedule-time">6:30 PM MT</div>
-              <div>Connect, comms check, warm-ups</div>
-            </div>
-            <div class="schedule-item">
-              <div class="schedule-time">7:00 PM MT</div>
-              <div>Customs begin — Halo 1 &amp; Halo 2</div>
-            </div>
-            <div class="schedule-item">
-              <div class="schedule-time">??:??</div>
-              <div>We play until we drop</div>
+        <div class="grid briefing-grid">
+          <div class="card reveal">
+            <div class="card-label">// DATE · TIME · LOC</div>
+            <h3 class="card-title">When &amp; Where</h3>
+            <div class="card-body">
+              <p><strong>Date:</strong> Friday, June 26, 2026</p>
+              <p><strong>Drop time:</strong> 6:30 PM Mountain Time</p>
+              <p><strong>Location:</strong> Virtual — your couch, your gear</p>
+              <p><strong>Mission:</strong> Halo 1 &amp; Halo 2 multiplayer customs. Mixed Xbox + PC lobby, crossplay engaged. Discord for voice.</p>
             </div>
           </div>
+
+          <div class="card reveal">
+            <div class="card-label">// OPS TIMELINE</div>
+            <h3 class="card-title">Schedule</h3>
+            <div class="card-body">
+              <div class="sched-item">
+                <div class="sched-time">6:30 PM MT</div>
+                <div>Connect, comms check, warm-ups</div>
+              </div>
+              <div class="sched-item">
+                <div class="sched-time">7:00 PM MT</div>
+                <div>Customs begin — Halo 1 &amp; Halo 2</div>
+              </div>
+              <div class="sched-item">
+                <div class="sched-time">??:??</div>
+                <div>We play until we drop</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ LOADOUT ============ -->
-  <section class="section" id="loadout">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-number">// 02</span>
-        <h2 class="section-title">Loadout Check</h2>
-        <div class="section-divider"></div>
-      </div>
+    <!-- ====================== 02 · LOADOUT ====================== -->
+    <section class="section" id="loadout">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-num">// 02</span>
+          <h2 class="section-title">Loadout Check</h2>
+          <span class="section-divider"></span>
+        </div>
 
-      <div class="loadout-grid">
-
-        <div class="hud-card">
-          <div class="card-label">// REQ-01</div>
-          <h3 class="card-title">Halo: MCC</h3>
-          <div class="card-body">
-            <p>You need <strong>Halo: The Master Chief Collection</strong> on Xbox or Steam (PC).</p>
-            <p><em>CRITICAL:</em> MCC is a launcher. Halo 1, 2, and 3 each install separately from inside it. Open MCC ahead of time and confirm each game is downloaded — don't assume "I have MCC" means you're ready to play Halo 2.</p>
-            <p>Steam price is $39.99 but it hits 75% off (~$10) regularly. On Xbox it's included with Game Pass Essential or higher, or buy it outright.</p>
+        <div class="grid loadout-grid">
+          <div class="card reveal">
+            <div class="card-label">// REQ-01</div>
+            <h3 class="card-title">Halo: MCC</h3>
+            <div class="card-body">
+              <p>You need <strong>Halo: The Master Chief Collection</strong> on Xbox or Steam (PC).</p>
+              <p><em>CRITICAL:</em> MCC is a launcher. Halo 1, 2, and 3 each install separately from inside it. Open MCC ahead of time and confirm each game is downloaded — don't assume "I have MCC" means you're ready to play Halo 2.</p>
+              <p>Steam price is $39.99 but it hits 75% off (~$10) regularly. On Xbox it's included with Game Pass Essential or higher, or buy it outright.</p>
+            </div>
           </div>
-        </div>
 
-        <div class="hud-card">
-          <div class="card-label">// REQ-02</div>
-          <h3 class="card-title">Xbox Account</h3>
-          <div class="card-body">
-            <p>You need a free <strong>Xbox / Microsoft account</strong> — yes, even on Steam.</p>
-            <p>Cross-play invites route through Xbox Live. Steam friends won't get you into the lobby. Xbox friends will.</p>
-            <p>Make one at <strong>xbox.com</strong> if you don't have one yet.</p>
+          <div class="card reveal">
+            <div class="card-label">// REQ-02</div>
+            <h3 class="card-title">Xbox Account</h3>
+            <div class="card-body">
+              <p>You need a free <strong>Xbox / Microsoft account</strong> — yes, even on Steam.</p>
+              <p>Cross-play invites route through Xbox Live. Steam friends won't get you into the lobby. Xbox friends will.</p>
+              <p>Make one at <strong>xbox.com</strong> if you don't have one yet.</p>
+            </div>
           </div>
-        </div>
 
-        <div class="hud-card">
-          <div class="card-label">// REQ-03</div>
-          <h3 class="card-title">Multiplayer Access</h3>
-          <div class="card-body">
-            <p><strong>On Xbox console:</strong> you need <strong>Game Pass Essential</strong> to play online. <em>Note:</em> this used to be called "Game Pass Core" — Microsoft renamed it in 2026. Same thing.</p>
-            <p><strong>On PC (Steam):</strong> nothing extra. Just MCC and the Microsoft account.</p>
-            <p><strong>Cost tip:</strong> if you don't already have Game Pass, a $10 sale-priced Steam copy is cheaper than one month of the subscription.</p>
+          <div class="card reveal">
+            <div class="card-label">// REQ-03</div>
+            <h3 class="card-title">Multiplayer Access</h3>
+            <div class="card-body">
+              <p><strong>On Xbox console:</strong> you need <strong>Game Pass Essential</strong> to play online. <em>Note:</em> this used to be called "Game Pass Core" — Microsoft renamed it in 2026. Same thing.</p>
+              <p><strong>On PC (Steam):</strong> nothing extra. Just MCC and the Microsoft account.</p>
+              <p><strong>Cost tip:</strong> if you don't already have Game Pass, a $10 sale-priced Steam copy is cheaper than one month of the subscription.</p>
+            </div>
           </div>
-        </div>
 
-        <div class="hud-card">
-          <div class="card-label">// REQ-04</div>
-          <h3 class="card-title">Cross-Network Play</h3>
-          <div class="card-body">
-            <p>Turn <strong>Cross-Network Play ON</strong> inside MCC. Required for our mixed Xbox + PC lobby.</p>
-            <p><strong>Path:</strong> MCC → Settings → Game Options → Cross-Network Play → ON.</p>
-            <p>Do this once before the party. It's a one-and-done.</p>
+          <div class="card reveal">
+            <div class="card-label">// REQ-04</div>
+            <h3 class="card-title">Cross-Network Play</h3>
+            <div class="card-body">
+              <p>Turn <strong>Cross-Network Play ON</strong> inside MCC. Required for our mixed Xbox + PC lobby.</p>
+              <p><strong>Path:</strong> MCC → Settings → Game Options → Cross-Network Play → ON.</p>
+              <p>Do this once before the party. It's a one-and-done.</p>
+            </div>
           </div>
-        </div>
 
-        <div class="hud-card">
-          <div class="card-label">// REQ-05</div>
-          <h3 class="card-title">PC Requirements</h3>
-          <div class="card-body">
-            <p>If you're on PC, the bar is <strong>very low</strong>:</p>
-            <p>• Windows 10 or 11 (64-bit)<br>
-              • 4 GB RAM minimum (8 GB recommended)<br>
-              • 43 GB free storage for the full collection<br>
-              • Any GPU made in the last decade</p>
-            <p>If your PC has run anything from the last ten years, you're good.</p>
+          <div class="card reveal">
+            <div class="card-label">// REQ-05</div>
+            <h3 class="card-title">PC Requirements</h3>
+            <div class="card-body">
+              <p>If you're on PC, the bar is <strong>very low</strong>:</p>
+              <p>• Windows 10 or 11 (64-bit)<br>
+                 • 4 GB RAM minimum (8 GB recommended)<br>
+                 • 43 GB free storage for the full collection<br>
+                 • Any GPU made in the last decade</p>
+              <p>If your PC has run anything from the last ten years, you're good.</p>
+            </div>
           </div>
-        </div>
 
-        <div class="hud-card">
-          <div class="card-label">// REQ-06</div>
-          <h3 class="card-title">Friend Me</h3>
-          <div class="card-body">
-            <p>Add me on Xbox <em>and</em> Discord <strong>before June 13</strong>. Don't wait until party night — Xbox friend requests can take a few minutes and invites get blocked otherwise.</p>
-            <p>Gamertags are in the Spartan Roster below ↓</p>
+          <div class="card reveal">
+            <div class="card-label">// REQ-06</div>
+            <h3 class="card-title">Friend Me</h3>
+            <div class="card-body">
+              <p>Add me on Xbox <em>and</em> Discord <strong>before June 26</strong>. Don't wait until party night — Xbox friend requests can take a few minutes and invites get blocked otherwise.</p>
+              <p>Gamertags are in the Spartan Roster below ↓</p>
+            </div>
           </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ COMMS ============ -->
-  <section class="section" id="comms">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-number">// 03</span>
-        <h2 class="section-title">Comms Channel</h2>
-        <div class="section-divider"></div>
-      </div>
-
-      <div class="hud-card comms-feature">
-        <div class="card-label">// PRIMARY VOICE CHANNEL</div>
-        <h3 class="card-title" style="font-size: 2rem; margin-bottom: 1rem;">Discord Server</h3>
-        <p class="card-body" style="max-width: 540px; margin: 0 auto 1.5rem;">All voice comms run through Discord. Join the server in advance, test your mic, then we're ready for go-time.</p>
-        <a href="https://discord.gg/dzbdzcSJDe" class="discord-cta" target="_blank" rel="noopener">
-          → Join Discord Server
-        </a>
-      </div>
-
-      <div class="loadout-grid">
-
-        <div class="hud-card">
-          <div class="card-label">// SETUP-PC</div>
-          <h3 class="card-title">Windows / Mac</h3>
-          <div class="card-body">
-            <p><strong>1.</strong> Make a free Discord account at <strong>discord.com</strong>.</p>
-            <p><strong>2.</strong> Click the green button above to join the server.</p>
-            <p><strong>3.</strong> Download the desktop app — better audio than browser.</p>
-            <p><strong>4.</strong> Settings → Voice &amp; Video → pick your mic and click "Let's Check" to test. Pick Push-to-Talk or Voice Activity (your call).</p>
-          </div>
-        </div>
-
-        <div class="hud-card">
-          <div class="card-label">// SETUP-XBOX</div>
-          <h3 class="card-title">Xbox Console</h3>
-          <div class="card-body">
-            <p>Xbox has <strong>native Discord voice</strong> on Series X|S and Xbox One:</p>
-            <p><strong>1.</strong> Install Discord on your phone if you haven't.</p>
-            <p><strong>2.</strong> Link Discord to your Microsoft account: Discord Settings → Connections → Xbox.</p>
-            <p><strong>3.</strong> Join the voice channel in Discord mobile, then tap <strong>Transfer Voice to Xbox</strong>.</p>
-            <p><em>Fallback:</em> just use Discord on your phone or PC for voice while playing on Xbox. Works fine. Use headphones.</p>
-          </div>
-        </div>
-
-        <div class="hud-card">
-          <div class="card-label">// SETUP-MOBILE</div>
-          <h3 class="card-title">Mobile Backup</h3>
-          <div class="card-body">
-            <p>Install Discord from the App Store or Google Play.</p>
-            <p>Useful as a backup if your PC mic dies, or to keep chatting if you step away from the screen.</p>
-            <p><em>Headphones strongly recommended</em> — laptop or phone speakers cause feedback that ruins it for everyone else in the channel.</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ ROSTER ============ -->
-  <section class="section" id="roster">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-number">// 04</span>
-        <h2 class="section-title">Spartan Roster</h2>
-        <div class="section-divider"></div>
-      </div>
-
-      <p class="roster-intro">
-        Add Dylan on both platforms <strong>before June 13</strong>. Cross-play invites route through Xbox Live — even if you're on Steam, you still need to be Xbox friends with me to get the invite.
-      </p>
-
-      <div class="roster-grid">
-        <div class="roster-item">
-          <div class="roster-platform">// XBOX GAMERTAG</div>
-          <div class="roster-tag">JohnLegend0506</div>
-        </div>
-        <div class="roster-item">
-          <div class="roster-platform">// DISCORD</div>
-          <div class="roster-tag">LegendaryEpics</div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- ====================== 03 · COMMS ====================== -->
+    <section class="section" id="comms">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-num">// 03</span>
+          <h2 class="section-title">Comms Channel</h2>
+          <span class="section-divider"></span>
+        </div>
+
+        <div class="card comms-feature reveal">
+          <div class="card-label">// PRIMARY VOICE CHANNEL</div>
+          <h3 class="card-title">Discord Server</h3>
+          <p class="card-body">All voice comms run through Discord. Join the server in advance, test your mic, then we're ready for go-time.</p>
+          <a href="https://discord.gg/dzbdzcSJDe" class="discord-cta" target="_blank" rel="noopener">→ Join Discord Server</a>
+        </div>
+
+        <div class="grid loadout-grid">
+          <div class="card reveal">
+            <div class="card-label">// SETUP-PC</div>
+            <h3 class="card-title">Windows / Mac</h3>
+            <div class="card-body">
+              <p><strong>1.</strong> Make a free Discord account at <strong>discord.com</strong>.</p>
+              <p><strong>2.</strong> Click the glowing button above to join the server.</p>
+              <p><strong>3.</strong> Download the desktop app — better audio than browser.</p>
+              <p><strong>4.</strong> Settings → Voice &amp; Video → pick your mic and click "Let's Check" to test. Pick Push-to-Talk or Voice Activity (your call).</p>
+            </div>
+          </div>
+
+          <div class="card reveal">
+            <div class="card-label">// SETUP-XBOX</div>
+            <h3 class="card-title">Xbox Console</h3>
+            <div class="card-body">
+              <p>Xbox has <strong>native Discord voice</strong> on Series X|S and Xbox One:</p>
+              <p><strong>1.</strong> Install Discord on your phone if you haven't.</p>
+              <p><strong>2.</strong> Link Discord to your Microsoft account: Discord Settings → Connections → Xbox.</p>
+              <p><strong>3.</strong> Join the voice channel in Discord mobile, then tap <strong>Transfer Voice to Xbox</strong>.</p>
+              <p><em>Fallback:</em> just use Discord on your phone or PC for voice while playing on Xbox. Works fine. Use headphones.</p>
+            </div>
+          </div>
+
+          <div class="card reveal">
+            <div class="card-label">// SETUP-MOBILE</div>
+            <h3 class="card-title">Mobile Backup</h3>
+            <div class="card-body">
+              <p>Install Discord from the App Store or Google Play.</p>
+              <p>Useful as a backup if your PC mic dies, or to keep chatting if you step away from the screen.</p>
+              <p><em>Headphones strongly recommended</em> — laptop or phone speakers cause feedback that ruins it for everyone else in the channel.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== 04 · ROSTER ====================== -->
+    <section class="section" id="roster">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-num">// 04</span>
+          <h2 class="section-title">Spartan Roster</h2>
+          <span class="section-divider"></span>
+        </div>
+
+        <p class="roster-intro reveal">
+          Add Dylan on both platforms <strong>before June 26</strong>. Cross-play invites route through Xbox Live — even if you're on Steam, you still need to be Xbox friends with me to get the invite.
+        </p>
+
+        <div class="grid roster-grid">
+          <div class="roster-item reveal">
+            <div class="roster-platform">// XBOX GAMERTAG</div>
+            <div class="roster-tag">JohnLegend0506</div>
+          </div>
+          <div class="roster-item reveal">
+            <div class="roster-platform">// DISCORD</div>
+            <div class="roster-tag">LegendaryEpics</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
-    <div class="container">
-      <p class="footer-tag">// SPARTANS NEVER DIE — THEY'RE JUST MISSING IN ACTION //</p>
+    <div class="footer__grid" aria-hidden="true"></div>
+    <div class="footer__inner container">
+      <div class="footer-ring" aria-hidden="true"></div>
+      <p class="footer-tag">// SPARTANS NEVER DIE — THEY'RE JUST MISSING IN ACTION //<br>WAKE ME WHEN YOU NEED ME.</p>
     </div>
   </footer>
 
   <script>
-    // Live countdown to June 13, 2026 @ 6:30 PM Mountain Daylight Time (UTC-6)
-    const target = new Date('2026-06-13T18:30:00-06:00').getTime();
-    const cd = document.getElementById('countdown');
+    // ---- Live countdown to Fri, June 26, 2026 @ 6:30 PM Mountain (MDT, UTC-6) ----
+    (function () {
+      var target = new Date('2026-06-26T18:30:00-06:00').getTime();
+      var elD = document.getElementById('cd-days');
+      var elH = document.getElementById('cd-hours');
+      var elM = document.getElementById('cd-mins');
+      var elS = document.getElementById('cd-secs');
+      var note = document.getElementById('cd-note');
+      var pad = function (n) { return String(n).padStart(2, '0'); };
 
-    function tick() {
-      const diff = target - Date.now();
-      if (diff <= 0) {
-        cd.textContent = '// MISSION ACTIVE //';
-        cd.style.color = 'var(--hud-cyan)';
+      function tick() {
+        var diff = target - Date.now();
+        if (diff <= 0) {
+          elD.textContent = elH.textContent = elM.textContent = elS.textContent = '00';
+          note.textContent = '// MISSION ACTIVE — DROP NOW';
+          note.style.color = 'var(--cyan)';
+          return false;
+        }
+        elD.textContent = Math.floor(diff / 86400000);
+        elH.textContent = pad(Math.floor(diff / 3600000) % 24);
+        elM.textContent = pad(Math.floor(diff / 60000) % 60);
+        elS.textContent = pad(Math.floor(diff / 1000) % 60);
+        return true;
+      }
+
+      if (tick()) {
+        var timer = setInterval(function () { if (!tick()) clearInterval(timer); }, 1000);
+      }
+    })();
+
+    // ---- Scroll reveal (progressive enhancement) ----
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
         return;
       }
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff / 3600000) % 24);
-      const m = Math.floor((diff / 60000) % 60);
-      const s = Math.floor((diff / 1000) % 60);
-      cd.textContent =
-        `T-MINUS ${d}D ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    }
-    tick();
-    setInterval(tick, 1000);
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
   </script>
 </body>
 </html>
