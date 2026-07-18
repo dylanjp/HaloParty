@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>COMBAT ROULETTE // Match Generator</title>
+  <meta name="description" content="Halo MCC LAN party match randomizer — roll a game, mode, and map for Halo 1, 2, and 3 customs.">
+  <meta name="theme-color" content="#02050c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2302050c'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2300E5FF' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23FF7A1A'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* =====================================================================
+       COMBAT ROULETTE — match randomizer for the Halo LAN party site.
+       Single file. Mobile-first, one-thumb use.
+       Design tokens duplicated from index.html — keep in sync.
+       ===================================================================== */
+
+    :root {
+      --void: #02050c;
+      --bg-deep: #060c18;
+      --bg-card: #0a1322;
+      --bg-elevated: #0f1d30;
+
+      --cyan: #00E5FF;
+      --cyan-bright: #6FF4FF;
+      --blue: #2E7BFF;
+      --ice: #CFF7FF;
+      --orange: #FF7A1A;
+      --amber: #FFB020;
+      --gold: #FFD34E;
+      --red: #FF4D5E;
+
+      --text: #E6F3FB;
+      --text-dim: #8DA6BC;
+      --text-faint: #495d72;
+
+      --line: rgba(0, 229, 255, 0.22);
+      --line-strong: rgba(0, 229, 255, 0.55);
+      --line-amber: rgba(255, 176, 32, 0.45);
+      --glow-cyan: 0 0 22px rgba(0, 229, 255, 0.45);
+      --glow-cyan-soft: 0 0 30px rgba(0, 229, 255, 0.22);
+      --glow-amber: 0 0 22px rgba(255, 176, 32, 0.45);
+      --glow-orange: 0 0 26px rgba(255, 122, 26, 0.5);
+
+      --f-display: 'Saira Stencil One', sans-serif;
+      --f-body: 'Rajdhani', sans-serif;
+      --f-mono: 'Share Tech Mono', monospace;
+      --f-tech: 'Orbitron', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--f-body);
+      background: var(--void);
+      color: var(--text);
+      min-height: 100svh;
+      line-height: 1.55;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 120px; /* keep content clear of the fixed rollbar */
+    }
+
+    /* Deep-space gradient + starfield (fixed, behind everything) */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% -10%, rgba(16, 46, 92, 0.55) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 110%, rgba(70, 30, 8, 0.4) 0%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,0.55), transparent),
+        radial-gradient(1px 1px at 28% 65%, rgba(255,255,255,0.45), transparent),
+        radial-gradient(1.5px 1.5px at 78% 14%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 88% 78%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 45% 40%, rgba(255,255,255,0.35), transparent),
+        radial-gradient(1.5px 1.5px at 62% 88%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 7% 86%, rgba(255,255,255,0.45), transparent),
+        radial-gradient(1px 1px at 94% 46%, rgba(255,255,255,0.4), transparent),
+        var(--void);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Faint CRT scanline veil */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0, transparent 3px,
+        rgba(0, 229, 255, 0.022) 3px, rgba(0, 229, 255, 0.022) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+
+    main {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0 1.1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    a { color: var(--cyan); }
+
+    /* --- top HUD strip --- */
+    .p-hud {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0.95rem 1.1rem 0.4rem;
+      font-family: var(--f-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.14em;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .p-hud a { text-decoration: none; }
+    .p-hud .live { color: var(--amber); }
+    .p-hud .live::before {
+      content: '';
+      display: inline-block;
+      width: 7px; height: 7px;
+      margin-right: 0.35rem;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: var(--glow-amber);
+      animation: pulse 2.2s ease-in-out infinite;
+      vertical-align: 1px;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .p-title {
+      font-family: var(--f-display);
+      font-size: clamp(1.9rem, 8.5vw, 2.5rem);
+      line-height: 1.05;
+      letter-spacing: 0.02em;
+      margin: 0.55rem 0 0.15rem;
+      background: linear-gradient(90deg, var(--cyan-bright), var(--ice) 60%, var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: var(--cyan);
+    }
+    .p-sub {
+      font-family: var(--f-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      color: var(--text-faint);
+      margin-bottom: 1.25rem;
+    }
+
+    /* --- result slots --- */
+    .slot {
+      background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-deep) 100%);
+      border: 1px solid var(--line);
+      padding: 0.95rem 1.05rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 0.85rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    }
+    .slot::before, .slot::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      border: 2px solid var(--cyan);
+      transition: border-color 0.3s ease;
+    }
+    .slot::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .slot::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    .slot--locked { border-color: var(--line-amber); box-shadow: var(--glow-amber); }
+    .slot--locked::before, .slot--locked::after { border-color: var(--amber); }
+
+    .slot.flash { animation: settleFlash 0.45s ease; }
+    @keyframes settleFlash {
+      0% { border-color: var(--cyan); box-shadow: var(--glow-cyan); }
+      100% { border-color: var(--line); box-shadow: none; }
+    }
+    .slot--locked.flash { animation: none; }
+
+    .slots.dim .slot { opacity: 0.4; }
+
+    .slot-main { flex: 1; min-width: 0; }
+    .slot-label {
+      font-family: var(--f-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.24em;
+      color: var(--amber);
+    }
+    .slot-value {
+      font-family: var(--f-display);
+      font-size: 1.42rem;
+      line-height: 1.12;
+      color: var(--cyan);
+      margin: 0.12rem 0 0.05rem;
+      overflow-wrap: anywhere;
+    }
+    .slot-meta {
+      font-family: var(--f-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+    .slot-setup {
+      font-family: var(--f-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+      color: var(--amber);
+      margin-top: 0.35rem;
+      padding-top: 0.35rem;
+      border-top: 1px dashed rgba(255, 176, 32, 0.25);
+    }
+    .slot-setup:empty { display: none; }
+
+    .lockbtn {
+      flex-shrink: 0;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0 0.55rem;
+      font-family: var(--f-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      color: var(--text-faint);
+      background: transparent;
+      border: 1px solid var(--text-faint);
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .lockbtn[aria-pressed="true"] {
+      color: var(--amber);
+      border-color: var(--amber);
+      box-shadow: var(--glow-amber);
+    }
+
+    /* --- empty state --- */
+    .empty {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 77, 94, 0.45);
+      border-left: 4px solid var(--red);
+      padding: 0.9rem 1rem;
+      font-family: var(--f-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--red);
+      margin-bottom: 0.85rem;
+    }
+    .empty[hidden] { display: none; }
+
+    /* --- filters --- */
+    .filters {
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+      margin: 1.15rem 0 1.5rem;
+    }
+    .filters summary {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.95rem 1rem;
+      font-family: var(--f-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--cyan);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .filters summary::-webkit-details-marker { display: none; }
+    .filters summary::after {
+      content: '▾';
+      color: var(--text-faint);
+      transition: transform 0.25s ease;
+    }
+    .filters[open] summary::after { transform: rotate(180deg); }
+    .fbadge {
+      margin-left: auto;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+      border: 1px solid var(--line-amber);
+      padding: 0.12rem 0.45rem;
+    }
+    .fbadge.allopen { color: var(--text-faint); border-color: var(--text-faint); }
+
+    .fgroups { padding: 0.3rem 1rem 1.1rem; border-top: 1px solid var(--line); }
+    .fgroup { margin-top: 0.9rem; }
+    .fgroup-label {
+      font-family: var(--f-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.24em;
+      color: var(--text-faint);
+      margin-bottom: 0.45rem;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .fchip {
+      font-family: var(--f-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      min-height: 44px;
+      padding: 0.5rem 0.8rem;
+      color: var(--cyan);
+      background: rgba(6, 12, 24, 0.66);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fchip[aria-pressed="true"] { box-shadow: 0 0 10px rgba(0, 229, 255, 0.18); }
+    .fchip[aria-pressed="false"] {
+      color: var(--text-faint);
+      border: 1px dashed var(--text-faint);
+      box-shadow: none;
+    }
+    .fchip.shake { animation: shake 0.2s ease; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* --- history --- */
+    .hist-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .hist-title {
+      font-family: var(--f-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--cyan);
+    }
+    .purge {
+      font-family: var(--f-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      color: var(--text-faint);
+      background: transparent;
+      border: 1px solid var(--text-faint);
+      min-height: 36px;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .purge:hover, .purge:focus-visible { color: var(--red); border-color: var(--red); }
+    .hist-list {
+      list-style: none;
+      font-family: var(--f-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+    }
+    .hist-list li {
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed rgba(0, 229, 255, 0.12);
+    }
+    .hist-list li:first-child { color: var(--cyan); }
+    .hist-empty { color: var(--text-faint); }
+
+    /* --- fixed rollbar --- */
+    .rollbar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 50;
+      padding: 1.4rem 1.1rem calc(0.8rem + env(safe-area-inset-bottom));
+      background: linear-gradient(to bottom, transparent, var(--void) 42%);
+      display: flex;
+      justify-content: center;
+    }
+    .rollbtn {
+      width: 100%;
+      max-width: 537.6px; /* 560 - container padding */
+      min-height: 60px;
+      font-family: var(--f-display);
+      font-size: 1.12rem;
+      letter-spacing: 0.06em;
+      color: #021019;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border: none;
+      cursor: pointer;
+      box-shadow: var(--glow-cyan-soft);
+      transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .rollbtn:active { transform: scale(0.985); }
+    .rollbtn:disabled { opacity: 0.55; cursor: default; }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      margin: -1px; padding: 0;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    noscript {
+      display: block;
+      font-family: var(--f-mono);
+      color: var(--red);
+      padding: 1rem 0;
+    }
+
+    @media (min-width: 760px) {
+      .p-title { font-size: 2.7rem; }
+      .slot-value { font-size: 1.6rem; }
+    }
+
+    /* --- reduced motion: kill decorative animation --- */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="p-hud">
+    <a href="index.html">&larr; BRIEFING</a>
+    <span>// MATCH ROLLER</span>
+    <span class="live">LIVE</span>
+  </header>
+
+  <main>
+    <h1 class="p-title">Combat Roulette</h1>
+    <p class="p-sub">// H1 &middot; H2 &middot; H3 CUSTOMS RANDOMIZER &middot; 47 MAPS &middot; 32 MODES</p>
+
+    <noscript>SYSTEM FAULT // this tool requires JavaScript.</noscript>
+
+    <div class="empty" id="empty" hidden>NO VALID COMBOS DETECTED // loosen filters or unlock a slot</div>
+
+    <section class="slots" id="slots" aria-label="Rolled match">
+      <div class="slot" id="slot-game">
+        <div class="slot-main">
+          <div class="slot-label">// GAME</div>
+          <div class="slot-value" id="v-game">&mdash; &mdash; &mdash;</div>
+          <div class="slot-meta" id="m-game"></div>
+        </div>
+        <button class="lockbtn" id="lock-game" aria-pressed="false" aria-label="Lock game">LOCK</button>
+      </div>
+
+      <div class="slot" id="slot-mode">
+        <div class="slot-main">
+          <div class="slot-label">// MODE</div>
+          <div class="slot-value" id="v-mode">&mdash; &mdash; &mdash;</div>
+          <div class="slot-meta" id="m-mode"></div>
+          <div class="slot-setup" id="s-mode"></div>
+        </div>
+        <button class="lockbtn" id="lock-mode" aria-pressed="false" aria-label="Lock mode">LOCK</button>
+      </div>
+
+      <div class="slot" id="slot-map">
+        <div class="slot-main">
+          <div class="slot-label">// MAP</div>
+          <div class="slot-value" id="v-map">&mdash; &mdash; &mdash;</div>
+          <div class="slot-meta" id="m-map"></div>
+        </div>
+        <button class="lockbtn" id="lock-map" aria-pressed="false" aria-label="Lock map">LOCK</button>
+      </div>
+    </section>
+
+    <details class="filters" id="filters">
+      <summary>// FILTERS <span class="fbadge allopen" id="fbadge">ALL OPEN</span></summary>
+      <div class="fgroups" id="fgroups">
+        <div class="fgroup">
+          <div class="fgroup-label">GAME</div>
+          <div class="chips" data-group="games">
+            <button class="fchip" data-val="1" aria-pressed="true">HALO: CE</button>
+            <button class="fchip" data-val="2" aria-pressed="true">HALO 2</button>
+            <button class="fchip" data-val="3" aria-pressed="true">HALO 3</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fgroup-label">STYLE</div>
+          <div class="chips" data-group="style">
+            <button class="fchip" data-val="team" aria-pressed="true">TEAM</button>
+            <button class="fchip" data-val="ffa" aria-pressed="true">FREE-FOR-ALL</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fgroup-label">INTENSITY</div>
+          <div class="chips" data-group="tiers">
+            <button class="fchip" data-val="sweaty" aria-pressed="true">SWEATY</button>
+            <button class="fchip" data-val="normal" aria-pressed="true">NORMAL</button>
+            <button class="fchip" data-val="casual" aria-pressed="true">VERY CASUAL</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fgroup-label">VEHICLES</div>
+          <div class="chips" data-group="veh">
+            <button class="fchip" data-val="true" aria-pressed="true">VEHICLES</button>
+            <button class="fchip" data-val="false" aria-pressed="true">NO VEHICLES</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fgroup-label">MAP SIZE</div>
+          <div class="chips" data-group="sizes">
+            <button class="fchip" data-val="S" aria-pressed="true">SMALL</button>
+            <button class="fchip" data-val="M" aria-pressed="true">MEDIUM</button>
+            <button class="fchip" data-val="L" aria-pressed="true">LARGE</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <section aria-label="Recent rolls">
+      <div class="hist-head">
+        <span class="hist-title">// RECENT DROPS</span>
+        <button class="purge" id="purge">PURGE LOG</button>
+      </div>
+      <ul class="hist-list" id="hist"><li class="hist-empty">no drops logged yet</li></ul>
+    </section>
+  </main>
+
+  <div class="rollbar">
+    <button class="rollbtn" id="rollbtn">&#9654; ROLL NEXT MATCH</button>
+  </div>
+
+  <div class="visually-hidden" id="sr-announce" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* ==================================================================
+       DATA
+       ================================================================== */
+
+    var GAMES = {
+      1: { name: 'HALO: CE', meta: 'COMBAT EVOLVED · 2001' },
+      2: { name: 'HALO 2',   meta: '2004 · BR ERA' },
+      3: { name: 'HALO 3',   meta: '2007 · FINISH THE FIGHT' }
+    };
+
+    // size: 'S'|'M'|'L'   veh: meaningful vehicle play on the default layout
+    var MAPS = [
+      // --- Halo 1 (14) ---
+      { id: 'h1-blood-gulch',    name: 'Blood Gulch',     game: 1, size: 'L', veh: true },
+      { id: 'h1-sidewinder',     name: 'Sidewinder',      game: 1, size: 'L', veh: true },
+      { id: 'h1-ice-fields',     name: 'Ice Fields',      game: 1, size: 'L', veh: true },
+      { id: 'h1-infinity',       name: 'Infinity',        game: 1, size: 'L', veh: true },
+      { id: 'h1-boarding-action',name: 'Boarding Action', game: 1, size: 'L', veh: false },
+      { id: 'h1-hang-em-high',   name: "Hang 'Em High",   game: 1, size: 'M', veh: false },
+      { id: 'h1-damnation',      name: 'Damnation',       game: 1, size: 'M', veh: false },
+      { id: 'h1-battle-creek',   name: 'Battle Creek',    game: 1, size: 'S', veh: false },
+      { id: 'h1-chill-out',      name: 'Chill Out',       game: 1, size: 'S', veh: false },
+      { id: 'h1-rat-race',       name: 'Rat Race',        game: 1, size: 'S', veh: false },
+      { id: 'h1-prisoner',       name: 'Prisoner',        game: 1, size: 'S', veh: false },
+      { id: 'h1-derelict',       name: 'Derelict',        game: 1, size: 'S', veh: false },
+      { id: 'h1-wizard',         name: 'Wizard',          game: 1, size: 'S', veh: false },
+      { id: 'h1-longest',        name: 'Longest',         game: 1, size: 'S', veh: false },
+      // --- Halo 2 (16) ---
+      { id: 'h2-coagulation',    name: 'Coagulation',     game: 2, size: 'L', veh: true },
+      { id: 'h2-containment',    name: 'Containment',     game: 2, size: 'L', veh: true },
+      { id: 'h2-headlong',       name: 'Headlong',        game: 2, size: 'L', veh: true },
+      { id: 'h2-waterworks',     name: 'Waterworks',      game: 2, size: 'L', veh: true },
+      { id: 'h2-zanzibar',       name: 'Zanzibar',        game: 2, size: 'M', veh: true },
+      { id: 'h2-burial-mounds',  name: 'Burial Mounds',   game: 2, size: 'M', veh: true },
+      { id: 'h2-terminal',       name: 'Terminal',        game: 2, size: 'M', veh: true },
+      { id: 'h2-ascension',      name: 'Ascension',       game: 2, size: 'M', veh: false },
+      { id: 'h2-ivory-tower',    name: 'Ivory Tower',     game: 2, size: 'M', veh: false },
+      { id: 'h2-sanctuary',      name: 'Sanctuary',       game: 2, size: 'M', veh: false },
+      { id: 'h2-uplift',         name: 'Uplift',          game: 2, size: 'M', veh: false },
+      { id: 'h2-colossus',       name: 'Colossus',        game: 2, size: 'M', veh: false },
+      { id: 'h2-turf',           name: 'Turf',            game: 2, size: 'M', veh: false },
+      { id: 'h2-lockout',        name: 'Lockout',         game: 2, size: 'S', veh: false },
+      { id: 'h2-beaver-creek',   name: 'Beaver Creek',    game: 2, size: 'S', veh: false },
+      { id: 'h2-midship',        name: 'Midship',         game: 2, size: 'S', veh: false },
+      // --- Halo 3 (17) ---
+      { id: 'h3-valhalla',       name: 'Valhalla',        game: 3, size: 'L', veh: true },
+      { id: 'h3-sandtrap',       name: 'Sandtrap',        game: 3, size: 'L', veh: true },
+      { id: 'h3-last-resort',    name: 'Last Resort',     game: 3, size: 'L', veh: true },
+      { id: 'h3-avalanche',      name: 'Avalanche',       game: 3, size: 'L', veh: true },
+      { id: 'h3-standoff',       name: 'Standoff',        game: 3, size: 'M', veh: true },
+      { id: 'h3-rats-nest',      name: "Rat's Nest",      game: 3, size: 'M', veh: true },
+      { id: 'h3-high-ground',    name: 'High Ground',     game: 3, size: 'M', veh: true },
+      { id: 'h3-the-pit',        name: 'The Pit',         game: 3, size: 'M', veh: false },
+      { id: 'h3-isolation',      name: 'Isolation',       game: 3, size: 'M', veh: false },
+      { id: 'h3-foundry',        name: 'Foundry',         game: 3, size: 'M', veh: false },
+      { id: 'h3-sandbox',        name: 'Sandbox',         game: 3, size: 'M', veh: false },
+      { id: 'h3-construct',      name: 'Construct',       game: 3, size: 'M', veh: false },
+      { id: 'h3-ghost-town',     name: 'Ghost Town',      game: 3, size: 'M', veh: false },
+      { id: 'h3-guardian',       name: 'Guardian',        game: 3, size: 'S', veh: false },
+      { id: 'h3-narrows',        name: 'Narrows',         game: 3, size: 'S', veh: false },
+      { id: 'h3-snowbound',      name: 'Snowbound',       game: 3, size: 'S', veh: false },
+      { id: 'h3-blackout',       name: 'Blackout',        game: 3, size: 'S', veh: false }
+    ];
+
+    // team: 'team'|'ffa'|'either'   tier: 'sweaty'|'normal'|'casual'
+    // veh: 'needs'|'any'            sizes: allowed map sizes
+    // mapIds: hard allowlist for court-specific modes
+    // setup[game]: how to create it in that game's custom game options
+    //             ("Stock:" = a built-in variant in MCC's variant picker)
+    var MODES = [
+      // --- team / objective ---
+      { id: 'team-slayer', name: 'Team Slayer', games: [1,2,3], team: 'team', tier: 'normal', veh: 'any', sizes: ['S','M','L'],
+        note: 'First to 50. The classic.',
+        setup: { 1: 'Stock: “Team Slayer”', 2: 'Stock: “Team Slayer”', 3: 'Stock: “Team Slayer”' } },
+      { id: 'team-hardcore', name: 'Team Hardcore', games: [2,3], team: 'team', tier: 'sweaty', veh: 'any', sizes: ['S','M'],
+        note: 'Tournament settings. BR starts, no radar.',
+        setup: { 2: 'Stock: MCC “Hardcore” variants — or Slayer › Start: BR, Motion Sensor: Off',
+                 3: 'Stock: MCC “Hardcore”/MLG — or Slayer › Primary: BR, Motion Tracker: Off' } },
+      { id: 'btb', name: 'Big Team Battle', games: [1,2,3], team: 'team', tier: 'normal', veh: 'needs', sizes: ['M','L'],
+        note: 'Full sandbox. Vehicles on.',
+        setup: { 1: 'Team Slayer / CTF on a big map › Vehicle Set: All Vehicles',
+                 2: 'Stock: Team Slayer / Multi Flag on a big map — vehicles are map default',
+                 3: 'Stock: Team Slayer / Multi Flag on a big map — vehicles are map default' } },
+      { id: 'ctf', name: 'Capture the Flag', games: [1,2,3], team: 'team', tier: 'normal', veh: 'any', sizes: ['S','M','L'],
+        note: 'Multi-flag. Steal theirs, keep yours.',
+        setup: { 1: 'Stock: “Capture the Flag”', 2: 'Stock: “Multi Flag”', 3: 'Stock: “Multi Flag”' } },
+      { id: 'one-flag', name: 'One-Flag CTF', games: [2,3], team: 'team', tier: 'normal', veh: 'any', sizes: ['M','L'],
+        note: 'Attack / defend rounds.',
+        setup: { 2: 'Stock: “1 Flag CTF” — asymmetric rounds', 3: 'Stock: “1 Flag CTF” — asymmetric rounds' } },
+      { id: 'assault', name: 'Assault', games: [2,3], team: 'team', tier: 'normal', veh: 'any', sizes: ['M','L'],
+        note: 'Carry the bomb. Plant it. Run.',
+        setup: { 2: 'Stock: “Assault” / “Neutral Bomb”', 3: 'Stock: “Assault” / “Neutral Bomb”' } },
+      { id: 'territories', name: 'Territories', games: [2,3], team: 'team', tier: 'normal', veh: 'any', sizes: ['M','L'],
+        note: 'Capture and hold the zones.',
+        setup: { 2: 'Stock: “Territories”', 3: 'Stock: “Territories”' } },
+      { id: 'vip', name: 'VIP', games: [3], team: 'team', tier: 'casual', veh: 'any', sizes: ['M','L'],
+        note: 'Guard your VIP. Delete theirs.',
+        setup: { 3: 'Stock: “VIP”' } },
+      { id: 'infection', name: 'Infection', games: [3], team: 'team', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'Flood outbreak. Survive the horde.',
+        setup: { 3: 'Stock: “Infection” or “Save One Bullet”' } },
+      { id: 'grifball', name: 'Grifball', games: [3], team: 'team', tier: 'casual', veh: 'any', sizes: ['M'],
+        mapIds: ['h3-foundry', 'h3-sandbox'],
+        note: 'Hammers, swords, one bomb.',
+        setup: { 3: 'Stock: MCC “Grifball” — needs a Foundry / Sandbox court' } },
+      { id: 'rocket-race', name: 'Rocket Race', games: [3], team: 'team', tier: 'casual', veh: 'needs', sizes: ['M','L'],
+        note: 'Mongoose pairs. Rockets. Keep driving.',
+        setup: { 3: 'Stock: “Rocket Race” — VIP-based, Mongoose pairs' } },
+
+      // --- team or FFA ---
+      { id: 'swat', name: 'SWAT', games: [2,3], team: 'either', tier: 'sweaty', veh: 'any', sizes: ['S','M'],
+        note: 'No shields, no radar. Headshots end it.',
+        setup: { 2: 'Slayer › Shield Type: No Shields · Motion Sensor: Off · Start: BR + Magnum',
+                 3: 'Slayer › Traits › Shields: No Shields · Motion Tracker: Off · Primary: BR · Secondary: Magnum · Grenades: None' } },
+      { id: 'snipers', name: 'Snipers', games: [1,2,3], team: 'either', tier: 'sweaty', veh: 'any', sizes: ['M','L'],
+        note: 'Snipers only, no radar.',
+        setup: { 1: 'Stock: “Snipers”', 2: 'Stock: “Snipers”',
+                 3: 'Slayer › Primary: Sniper Rifle · Weapons on Map: None · Motion Tracker: Off' } },
+      { id: 'shotty-snipers', name: 'Shotty Snipers', games: [2,3], team: 'either', tier: 'normal', veh: 'any', sizes: ['S','M'],
+        note: 'Shotgun + sniper. Nothing else.',
+        setup: { 2: 'Slayer › Primary: Shotgun · Secondary: Sniper Rifle · Weapons on Map: None',
+                 3: 'Slayer › Primary: Shotgun · Secondary: Sniper Rifle · Weapons on Map: None' } },
+      { id: 'rockets', name: 'Rockets', games: [1,2,3], team: 'either', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'Rocket launchers for everyone.',
+        setup: { 1: 'Stock: “Rockets” — no radar', 2: 'Stock: “Rockets” — no radar', 3: 'Stock: “Rockets”' } },
+      { id: 'swords', name: 'Swords', games: [2,3], team: 'either', tier: 'casual', veh: 'any', sizes: ['S'],
+        note: 'Energy swords only. Lunge fest.',
+        setup: { 2: 'Stock: “Swords” — swords + overshields',
+                 3: 'Slayer › Primary: Energy Sword · Weapons on Map: None' } },
+      { id: 'fiesta', name: 'Fiesta', games: [2,3], team: 'either', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'Random weapons every spawn.',
+        setup: { 2: 'Stock: Oddball › “Fiesta” — or Slayer › Starting Weapon: Random',
+                 3: 'Slayer › Traits › Primary: Random · Secondary: Random' } },
+      { id: 'oddball', name: 'Oddball', games: [1,2,3], team: 'either', tier: 'normal', veh: 'any', sizes: ['S','M'],
+        note: 'Hold the skull to score time.',
+        setup: { 1: 'Stock: “Oddball” / “Team Oddball”', 2: 'Stock: “Oddball” / “Team Ball”',
+                 3: 'Stock: “Oddball” / “Team Oddball”' } },
+      { id: 'koth', name: 'King of the Hill', games: [1,2,3], team: 'either', tier: 'normal', veh: 'any', sizes: ['S','M'],
+        note: 'Own the circle.',
+        setup: { 1: 'Stock: “King” / “Team King”', 2: 'Stock: “King” / “Team King”',
+                 3: 'Stock: “Team King” — FFA: “Crazy King”' } },
+
+      // --- FFA-only ---
+      { id: 'ffa-slayer', name: 'FFA Slayer', games: [1,2,3], team: 'ffa', tier: 'normal', veh: 'any', sizes: ['S','M'],
+        note: 'Lone wolves. Top score wins.',
+        setup: { 1: 'Stock: “Slayer”', 2: 'Stock: “Slayer”', 3: 'Stock: “Slayer”' } },
+      { id: 'duel', name: 'Duel', games: [3], team: 'ffa', tier: 'sweaty', veh: 'any', sizes: ['S','M'],
+        note: 'The leader cannot hide. 10 kills.',
+        setup: { 3: 'Stock: “Duel” — leader gets a waypoint, no camping' } },
+      { id: 'elimination', name: 'Elimination', games: [1,2], team: 'ffa', tier: 'sweaty', veh: 'any', sizes: ['S','M'],
+        note: 'One life. Last one standing.',
+        setup: { 1: 'Stock: “Elimination”',
+                 2: 'Stock: “Elimination” — spicy: “Phantom Elim” adds camo' } },
+      { id: 'crazy-king', name: 'Crazy King', games: [1,2,3], team: 'ffa', tier: 'normal', veh: 'any', sizes: ['S','M'],
+        note: 'The hill moves. Chase it.',
+        setup: { 1: 'Stock: “Crazy King”', 2: 'Stock: “Crazy King”', 3: 'Stock: “Crazy King”' } },
+      { id: 'moshpit', name: 'Moshpit', games: [3], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'One hill. Everyone inside is tougher.',
+        setup: { 3: 'Stock: “Moshpit”' } },
+      { id: 'phantoms', name: 'Phantoms', games: [1,2], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'Everyone is invisible. No radar.',
+        setup: { 1: 'Stock: “Phantoms”', 2: 'Stock: “Phantoms”' } },
+      { id: 'stalker', name: 'Stalker', games: [1], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'One invisible hunter. Steal the power.',
+        setup: { 1: 'Stock: Oddball › “Classic Stalker”' } },
+      { id: 'reverse-tag', name: 'Reverse Tag', games: [1], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: '“It” runs slow but scores time.',
+        setup: { 1: 'Stock: Oddball › “Classic Reverse Tag”' } },
+      { id: 'juggernaut', name: 'Juggernaut', games: [1,2,3], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'Kill the Juggernaut to become it.',
+        setup: { 1: 'Stock: Oddball › “Juggernaut”', 2: 'Stock: “2 on 1” / “Ninjanaut”',
+                 3: 'Stock: “Juggernaut” / “Mad Dash”' } },
+      { id: 'rocketball', name: 'Rocketball', games: [2,3], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'Oddball. Rockets only.',
+        setup: { 2: 'Stock: “Rocketball”', 3: 'Stock: “Rocketball”' } },
+      { id: 'swordball', name: 'Swordball', games: [2], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S'],
+        note: 'Oddball rounds. Swords. No radar.',
+        setup: { 2: 'Stock: “Swordball”' } },
+      { id: 'ninjaball', name: 'Ninjaball', games: [3], team: 'ffa', tier: 'casual', veh: 'any', sizes: ['S','M'],
+        note: 'Fast, agile, vulnerable ball carrier.',
+        setup: { 3: 'Stock: “Ninjaball”' } },
+      { id: 'race', name: 'Race', games: [1], team: 'ffa', tier: 'casual', veh: 'needs', sizes: ['M','L'],
+        note: 'Checkpoint racing. Warthogs.',
+        setup: { 1: 'Stock: “Race” / “Rally” — team: “Team Race”' } }
+    ];
+
+    var SIZE_LABEL = { S: 'SMALL ARENA', M: 'MEDIUM', L: 'LARGE' };
+    var MAP_NAMES = MAPS.map(function (m) { return m.name; });
+    var MODE_NAMES = MODES.map(function (m) { return m.name.toUpperCase(); });
+    var GAME_NAMES = [GAMES[1].name, GAMES[2].name, GAMES[3].name];
+
+    function mapById(id)  { return MAPS.find(function (m) { return m.id === id; }) || null; }
+    function modeById(id) { return MODES.find(function (m) { return m.id === id; }) || null; }
+
+    /* ==================================================================
+       STATE
+       ================================================================== */
+
+    var KEY = 'haloparty_picker_v1';
+
+    function defaults() {
+      return {
+        filters: {
+          games: [1, 2, 3],
+          style: ['team', 'ffa'],
+          tiers: ['sweaty', 'normal', 'casual'],
+          veh: [true, false],
+          sizes: ['S', 'M', 'L']
+        },
+        locks: { game: null, mode: null, map: null },
+        current: null,          // { game, modeId, mapId }
+        recentMaps: [],         // newest first, max 5
+        recentModes: [],        // newest first, max 3
+        history: []             // strings, newest first, max 20
+      };
+    }
+
+    function validState(s) {
+      try {
+        if (!s || typeof s !== 'object' || !s.filters || !s.locks) return false;
+        var f = s.filters;
+        if (![f.games, f.style, f.tiers, f.veh, f.sizes,
+              s.recentMaps, s.recentModes, s.history].every(Array.isArray)) return false;
+        // scrub stale references from older data versions
+        if (s.locks.mode && !modeById(s.locks.mode)) s.locks.mode = null;
+        if (s.locks.map && !mapById(s.locks.map)) s.locks.map = null;
+        if (s.locks.game && !GAMES[s.locks.game]) s.locks.game = null;
+        if (s.current && (!GAMES[s.current.game] || !modeById(s.current.modeId) || !mapById(s.current.mapId))) {
+          s.current = null;
+        }
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function load() {
+      try {
+        var raw = localStorage.getItem(KEY);
+        if (!raw) return defaults();
+        var s = JSON.parse(raw);
+        return validState(s) ? s : defaults();
+      } catch (e) { return defaults(); }
+    }
+
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* in-memory only */ }
+    }
+
+    var state = load();
+
+    /* ==================================================================
+       ENGINE
+       ================================================================== */
+
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function uniq(arr) {
+      return arr.filter(function (v, i) { return arr.indexOf(v) === i; });
+    }
+
+    function teamMatch(cap, styleArr) {
+      return cap === 'either' ? styleArr.length > 0 : styleArr.indexOf(cap) !== -1;
+    }
+
+    // All (map, mode) pairs that satisfy intrinsic compatibility, locks, and
+    // filters. Locks are hard pins and beat filters; filters only constrain
+    // the unlocked dimensions.
+    function candidateTriples(f, locks) {
+      var lockedMap = locks.map ? mapById(locks.map) : null;
+      var gameForced = locks.game || (lockedMap ? lockedMap.game : null);
+      var out = [];
+      MAPS.forEach(function (map) {
+        if (locks.map && map.id !== locks.map) return;
+        if (gameForced && map.game !== gameForced) return;
+        if (!gameForced && f.games.indexOf(map.game) === -1) return;
+        if (!locks.map) {
+          if (f.sizes.indexOf(map.size) === -1) return;
+          if (f.veh.indexOf(map.veh) === -1) return;
+        }
+        MODES.forEach(function (mode) {
+          if (locks.mode && mode.id !== locks.mode) return;
+          if (mode.games.indexOf(map.game) === -1) return;
+          if (mode.mapIds && mode.mapIds.indexOf(map.id) === -1) return;
+          if (mode.sizes.indexOf(map.size) === -1) return;
+          if (mode.veh === 'needs' && !map.veh) return;
+          if (!locks.mode) {
+            if (f.tiers.indexOf(mode.tier) === -1) return;
+            if (!teamMatch(mode.team, f.style)) return;
+          }
+          out.push({ map: map, mode: mode });
+        });
+      });
+      return out;
+    }
+
+    function roll() {
+      showEmpty(false);
+      var base = candidateTriples(state.filters, state.locks);
+      if (!base.length) { showEmpty(true); return; }
+
+      // No-repeat, degrading gracefully. Locked slots are exempt from recency.
+      var pool = base.filter(function (t) {
+        return (state.locks.map || state.recentMaps.indexOf(t.map.id) === -1)
+            && (state.locks.mode || state.recentModes.indexOf(t.mode.id) === -1);
+      });
+      if (!pool.length) {
+        // repeating a mode is fine; repeating a map twice in a row is the sin
+        pool = base.filter(function (t) {
+          return state.locks.map || state.recentMaps.indexOf(t.map.id) === -1;
+        });
+      }
+      if (!pool.length) pool = base;
+
+      // Hierarchical sampling within the valid set: game, then mode, then map.
+      var g = pick(uniq(pool.map(function (t) { return t.map.game; })));
+      var gm = pool.filter(function (t) { return t.map.game === g; });
+      var modeId = pick(uniq(gm.map(function (t) { return t.mode.id; })));
+      var final = pick(gm.filter(function (t) { return t.mode.id === modeId; }));
+      animateAndCommit(final);
+    }
+
+    function pushRecent(arr, id, cap) {
+      var i = arr.indexOf(id);
+      if (i !== -1) arr.splice(i, 1);
+      arr.unshift(id);
+      if (arr.length > cap) arr.length = cap;
+    }
+
+    function commit(final) {
+      var g = final.map.game;
+      state.current = { game: g, modeId: final.mode.id, mapId: final.map.id };
+      pushRecent(state.recentMaps, final.map.id, 5);
+      pushRecent(state.recentModes, final.mode.id, 3);
+      state.history.unshift('H' + g + ' · ' + final.mode.name.toUpperCase() + ' · ' + final.map.name.toUpperCase());
+      if (state.history.length > 20) state.history.length = 20;
+      save();
+      renderSlots();
+      renderHistory();
+      announce(final);
+    }
+
+    // Cheap insurance against future data edits: every mode must have at
+    // least one compatible map, and a setup recipe, for each game it claims.
+    function selfCheck() {
+      MODES.forEach(function (mode) {
+        mode.games.forEach(function (g) {
+          var ok = MAPS.some(function (m) {
+            return m.game === g
+                && mode.sizes.indexOf(m.size) !== -1
+                && (mode.veh !== 'needs' || m.veh)
+                && (!mode.mapIds || mode.mapIds.indexOf(m.id) !== -1);
+          });
+          if (!ok) console.warn('[data] "' + mode.name + '" has no compatible maps in Halo ' + g);
+          if (!mode.setup || !mode.setup[g]) console.warn('[data] "' + mode.name + '" missing setup recipe for Halo ' + g);
+        });
+      });
+    }
+
+    /* ==================================================================
+       RENDER
+       ================================================================== */
+
+    var el = function (id) { return document.getElementById(id); };
+    var slotsEl = el('slots');
+    var rollBtn = el('rollbtn');
+
+    function renderSlots() {
+      var c = state.current;
+      var mode = c ? modeById(c.modeId) : null;
+      var map = c ? mapById(c.mapId) : null;
+
+      el('v-game').textContent = c ? GAMES[c.game].name : '— — —';
+      el('m-game').textContent = c ? GAMES[c.game].meta : '';
+      el('v-mode').textContent = mode ? mode.name.toUpperCase() : '— — —';
+      el('m-mode').textContent = mode ? mode.note : '';
+      el('s-mode').textContent = mode ? 'SETUP // ' + mode.setup[c.game] : '';
+      el('v-map').textContent = map ? map.name : '— — —';
+      el('m-map').textContent = map
+        ? SIZE_LABEL[map.size] + ' · ' + (map.veh ? 'VEHICLES' : 'NO VEHICLES')
+        : '';
+
+      ['game', 'mode', 'map'].forEach(function (slot) {
+        var locked = !!state.locks[slot];
+        el('lock-' + slot).setAttribute('aria-pressed', String(locked));
+        el('lock-' + slot).textContent = locked ? 'LOCKED' : 'LOCK';
+        el('slot-' + slot).classList.toggle('slot--locked', locked);
+      });
+    }
+
+    function renderChips() {
+      document.querySelectorAll('.chips').forEach(function (group) {
+        var key = group.dataset.group;
+        group.querySelectorAll('.fchip').forEach(function (chip) {
+          var val = parseVal(key, chip.dataset.val);
+          chip.setAttribute('aria-pressed', String(state.filters[key].indexOf(val) !== -1));
+        });
+      });
+      renderBadge();
+    }
+
+    function renderBadge() {
+      var f = state.filters;
+      var cuts = (3 - f.games.length) + (2 - f.style.length) + (3 - f.tiers.length)
+               + (2 - f.veh.length) + (3 - f.sizes.length);
+      var badge = el('fbadge');
+      badge.textContent = cuts > 0 ? cuts + ' CUTS' : 'ALL OPEN';
+      badge.classList.toggle('allopen', cuts === 0);
+    }
+
+    function renderHistory() {
+      var list = el('hist');
+      list.innerHTML = '';
+      if (!state.history.length) {
+        var li = document.createElement('li');
+        li.className = 'hist-empty';
+        li.textContent = 'no drops logged yet';
+        list.appendChild(li);
+        return;
+      }
+      state.history.forEach(function (entry) {
+        var li = document.createElement('li');
+        li.textContent = entry;
+        list.appendChild(li);
+      });
+    }
+
+    function showEmpty(on) {
+      el('empty').hidden = !on;
+      slotsEl.classList.toggle('dim', on);
+    }
+
+    function announce(final) {
+      el('sr-announce').textContent =
+        GAMES[final.map.game].name + ', ' + final.mode.name + ', on ' + final.map.name + '.';
+    }
+
+    /* ==================================================================
+       ANIMATE
+       ================================================================== */
+
+    var SETTLE = { game: 400, mode: 650, map: 900 };
+    var NAME_POOLS = { game: GAME_NAMES, mode: MODE_NAMES, map: MAP_NAMES };
+
+    function slotLockedNow(slot) {
+      if (slot === 'game') return !!(state.locks.game || state.locks.map);
+      return !!state.locks[slot];
+    }
+
+    function animateAndCommit(final) {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) { commit(final); return; }
+
+      rollBtn.disabled = true;
+      var timers = [];
+      ['game', 'mode', 'map'].forEach(function (slot) {
+        if (slotLockedNow(slot)) return;
+        var valueEl = el('v-' + slot);
+        var iv = setInterval(function () {
+          valueEl.textContent = pick(NAME_POOLS[slot]);
+        }, 45);
+        timers.push(iv);
+        setTimeout(function () {
+          clearInterval(iv);
+          var card = el('slot-' + slot);
+          card.classList.remove('flash');
+          void card.offsetWidth; // restart the animation
+          card.classList.add('flash');
+        }, SETTLE[slot]);
+      });
+
+      setTimeout(function () {
+        timers.forEach(clearInterval);
+        commit(final);
+        rollBtn.disabled = false;
+        if (navigator.vibrate) navigator.vibrate(20);
+      }, 950);
+    }
+
+    /* ==================================================================
+       WIRE
+       ================================================================== */
+
+    function parseVal(group, raw) {
+      if (group === 'games') return Number(raw);
+      if (group === 'veh') return raw === 'true';
+      return raw;
+    }
+
+    el('fgroups').addEventListener('click', function (e) {
+      var chip = e.target.closest('.fchip');
+      if (!chip) return;
+      var group = chip.parentElement.dataset.group;
+      var val = parseVal(group, chip.dataset.val);
+      var arr = state.filters[group];
+      var i = arr.indexOf(val);
+      if (i === -1) {
+        arr.push(val);
+      } else if (arr.length > 1) {
+        arr.splice(i, 1);
+      } else {
+        // last active chip in a group can't be turned off
+        chip.classList.remove('shake');
+        void chip.offsetWidth;
+        chip.classList.add('shake');
+        return;
+      }
+      save();
+      renderChips();
+      showEmpty(false);
+    });
+
+    ['game', 'mode', 'map'].forEach(function (slot) {
+      el('lock-' + slot).addEventListener('click', function () {
+        if (state.locks[slot]) {
+          state.locks[slot] = null;
+        } else {
+          if (!state.current) return; // nothing rolled yet
+          state.locks[slot] = slot === 'game' ? state.current.game
+                            : slot === 'mode' ? state.current.modeId
+                            : state.current.mapId;
+        }
+        save();
+        renderSlots();
+        showEmpty(false);
+      });
+    });
+
+    rollBtn.addEventListener('click', roll);
+
+    el('purge').addEventListener('click', function () {
+      state.history = [];
+      state.recentMaps = [];
+      state.recentModes = [];
+      save();
+      renderHistory();
+    });
+
+    selfCheck();
+    renderSlots();
+    renderChips();
+    renderHistory();
+  })();
+  </script>
+</body>
+</html>

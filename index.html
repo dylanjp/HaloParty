@@ -307,6 +307,8 @@
       white-space: nowrap;
     }
     .chip b { color: var(--text-dim); font-weight: 400; }
+    a.chip--tool { color: var(--amber); border-color: var(--line-amber); text-decoration: none; transition: box-shadow 0.25s ease; }
+    a.chip--tool:hover, a.chip--tool:focus-visible { box-shadow: var(--glow-amber); }
 
     /* --- segmented countdown --- */
     .countdown {
@@ -695,6 +697,7 @@
         <span class="chip"><b>DROP</b> &nbsp;6:30 PM MT</span>
         <span class="chip"><b>NET</b> &nbsp;XBOX + PC CROSSPLAY</span>
         <span class="chip"><b>NODE</b> &nbsp;LEHI, UT</span>
+        <a class="chip chip--tool" href="picker.html"><b>TOOL</b> &nbsp;COMBAT ROULETTE &rarr;</a>
       </div>
 
       <div class="countdown" id="countdown" role="timer" aria-label="Countdown to drop">
